@@ -17,14 +17,6 @@ app = Flask(__name__)
 app.secret_key = "some_very_secret_key"
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-
-
-
-
-
-
-
 # Path to CSV
 CSV_FILE_PATH = r"C:\Users\shiva\Downloads\Crew Agent (Responses) - Form Responses 1 (1).csv"
 
