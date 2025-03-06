@@ -68,5 +68,5 @@ Troubleshooting & FAQs
 This project is created as a futurework of my Capstone Project sponsored by the NASA Ames Research center
 Special thanks to NASA’s Human-Computer Interaction Group for inspiring this project. 🙌  
 Special thanks to Chatgpt! For helping me out in fixing and writing code. 
-For any questions, feature requests, or bug reports, please contact Shivam Shukla at sshukla3@ucsc.edu.
+For any questions, feature requests, or bug reports, please contact me at sshukla3@ucsc.edu.
 
