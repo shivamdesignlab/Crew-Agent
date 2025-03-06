@@ -7,7 +7,6 @@ Crew Agent is an intelligent scheduling assistant designed to enhance astronaut 
 
 The agent processes crew schedule data from a CSV file, and helps users find the best time slots for their activities while minimizing conflicts.
 
----
 
 Features
 ✅ Analyzes and processes astronaut scheduling preferences
@@ -26,9 +25,7 @@ Required Python Packages:
 - `json` (for formatting structured crew schedules)
 - `re` (for extracting scheduling details from messages)
 
-The app will be available at: http://127.0.0.1:5000
 
----
 
 How It Works
 1️⃣ Data Processing: Loading the Crew Schedule 
