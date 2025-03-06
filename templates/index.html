@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crew Agent</title>
+  <style>
+    /* Basic resets */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000; /* Dark background */
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    /* Container for everything */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    /* Logo styling */
+    .logo {
+      width: 100px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    /* Title styling */
+    .title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+
+    /* Chat window to display messages */
+    #chat-window {
+      width: 100%;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      max-height: 300px;      /* Adjust as needed */
+      overflow-y: auto;       /* Scroll if messages exceed height */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* Agent/user message blocks */
+    .agent-msg, .user-msg {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: left;
+      line-height: 1.4;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .agent-msg {
+      background-color: #2f2f2f;
+      align-self: flex-start;
+    }
+
+    .user-msg {
+      background-color: #444;
+      align-self: flex-end;
+      margin-left: auto; /* pushes user messages to the right */
+    }
+
+    /* Input area styling */
+    .input-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      background-color: #1a1a1a;
+      border-radius: 50px;
+      padding: 10px 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .chat-area {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    /* Text input */
+    #userMessage {
+      flex: 1;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      color: #fff;
+      font-size: 1rem;
+      padding: 5px 10px;
+    }
+
+    #userMessage::placeholder {
+      color: #999;
+    }
+
+    /* Send button (circular with arrow) */
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      outline: none;
+      border-radius: 50%;
+      background-color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .send-btn:hover {
+      background-color: #666;
+    }
+
+    /* Arrow icon (simple unicode or SVG) */
+    .send-btn::before {
+      content: '➜';
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    /* Footer at the bottom */
+    .footer {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #888;
+    }
+
+    /* Make sure chat messages stay at the bottom when they overflow */
+    #chat-window {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='images/crew.png') }}" alt="Crew Agent Logo" style="height:100px">
+
+<!--    <img src="/static/images/logo.png" alt="Crew Agent Logo">-->
+
+
+    <!-- Title -->
+    <h1 class="title">Crew Agent</h1>
+
+    <!-- Chat messages container -->
+    <div id="chat-window">
+      <!-- Initial greeting -->
+      <div class="agent-msg">Hey there! How can I help you today?</div>
+    </div>
+
+    <!-- Input + Send Button -->
+    <div class="input-container">
+      <input
+        type="text"
+        id="userMessage"
+        placeholder="Hey there! How can I help you today?"
+        required
+      />
+      <button type="button" class="send-btn" onclick="sendMessage()"></button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      Developed by Shivam Shukla
+    </div>
+  </div>
+
+  <script>
+    // Send message to the server
+    function sendMessage() {
+      let inputField = document.getElementById("userMessage");
+      let userMessage = inputField.value.trim();
+
+      if (userMessage === "") return; // ignore empty input
+
+      // Chat window
+      const chatWindow = document.getElementById('chat-window');
+
+      // Display the user's message
+      const userMsgDiv = document.createElement('div');
+      userMsgDiv.className = 'user-msg';
+      userMsgDiv.innerHTML = userMessage;
+      chatWindow.appendChild(userMsgDiv);
+
+      // Clear input & refocus
+      inputField.value = '';
+      inputField.focus();
+
+      // Scroll to the bottom
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      // Send POST request to Flask backend
+      fetch('/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userMessage })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display the agent's reply
+        const agentMsgDiv = document.createElement('div');
+        agentMsgDiv.className = 'agent-msg';
+        agentMsgDiv.innerHTML = data.reply;
+        chatWindow.appendChild(agentMsgDiv);
+
+        // Auto-scroll to bottom
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+      })
+      .catch(err => {
+        console.error(err);
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'agent-msg';
+        errorDiv.style.color = 'red';
+        errorDiv.innerHTML = `<strong>Error:</strong> ${err}`;
+        chatWindow.appendChild(errorDiv);
+      });
+    }
+
+    // Send message on Enter key press
+    document.getElementById("userMessage").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
